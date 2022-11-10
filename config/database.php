@@ -63,6 +63,15 @@ return [
             ]) : [],
         ],
 
+        'mysql_retell' => [
+            'driver'    => env('DB_CONNECTION_RETELL'),
+            'host'      => env('DB_HOST_RETELL'),
+            'port'      => env('DB_PORT_RETELL'),
+            'database'  => env('DB_DATABASE_RETELL'),
+            'username'  => env('DB_USERNAME_RETELL'),
+            'password'  => env('DB_PASSWORD_RETELL'),
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),

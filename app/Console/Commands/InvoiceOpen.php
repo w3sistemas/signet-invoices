@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Enumerators\SignetEnum;
+use App\Models\Client;
 use App\Models\Invoice;
 use App\Services\SignetInvoiceService;
 use Carbon\Carbon;
