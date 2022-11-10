@@ -23,10 +23,10 @@ class SignetInvoiceService
     /**
      * @throws GuzzleException
      */
-    public function getListInvoices($params): string
+    public function getListInvoices($params, $route): string
     {
         try {
-            $request = $this->http->post(env('SIGNET_API') . SignetEnum::INVOICES, [
+            $request = $this->http->post(env('SIGNET_API') . $route, [
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'x-access-token' => env('SIGNET_API_KEY')

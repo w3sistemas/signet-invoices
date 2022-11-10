@@ -10,6 +10,7 @@ class Invoice extends Model
     use HasFactory;
 
     public $fillable = [
+        'abn',
         'customer_code',
         'company_name',
         'cnpj',

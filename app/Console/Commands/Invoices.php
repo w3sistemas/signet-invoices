@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enumerators\SignetEnum;
 use App\Models\Invoice;
 use App\Services\SignetInvoiceService;
 use Carbon\Carbon;
@@ -59,10 +60,10 @@ class Invoices extends Command
 
         $params = [
             'partner' => 'ABNCS',
-            'createdAt' => "01/{$month}/{$year}",
+            'createdAt' => "01/{$month}/{$year}"
         ];
 
-        $request = $this->signetInvoiceService->getListInvoices($params);
+        $request = $this->signetInvoiceService->getListInvoices($params, SignetEnum::INVOICES);
 
         if ($request) {
 
@@ -71,6 +72,7 @@ class Invoices extends Command
             foreach ($output['detail'] as $row) {
 
                 $data = [
+                    'abn' => 'ABNCS',
                     'invoice' => $row['invoice'],
                     'customer_code' => $row['customer_code'],
                     'company_name' => $row['company_name'],
