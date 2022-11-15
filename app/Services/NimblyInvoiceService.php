@@ -68,7 +68,7 @@ class NimblyInvoiceService
     public function createInvoice($params): string
     {
         try {
-            $request = $this->http->post(env('NIMBLY_API') . NimblyEnum::PEOPLE, [
+            $request = $this->http->post(env('NIMBLY_API') . NimblyEnum::FINANCIAL_RECEPTION, [
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'App' => env('NIMBLY_APP'),
