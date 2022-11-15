@@ -28,6 +28,7 @@ class Invoice extends Model
         'invoice_string',
         'link_nfe',
         'send_nimbly',
+        'id_nimbly_invoice',
         'send_nimbly_date'
     ];
 }

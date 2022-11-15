@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Services\NimblyInvoiceService;
+use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Console\Command;
 use Nette\Utils\Json;
@@ -54,8 +55,7 @@ class NimblySendInvoice extends Command
      */
     public function handle(): void
     {
-        $invoices = Invoice::select('id', 'customer_code', 'send_nimbly')
-            ->where([
+        $invoices = Invoice::where([
             'send_nimbly' => 0
         ])
             ->limit(1)
@@ -69,7 +69,6 @@ class NimblySendInvoice extends Command
 
                 if ($clientRemote) {
                     if (!$clientRemote->id_nimbly) {
-
                         $params = [
                             'Nome' => $clientRemote->corporate_name,
                             'NomeFantasia' => $clientRemote->corporate_name,
@@ -111,89 +110,100 @@ class NimblySendInvoice extends Command
                 }
 
                 $params = [
+                    '_DataVencimento' => $invoice['invoice_duedate'],
                     'ID' => 0,
-                    'Descricao' => '[Nf 2479] Parcela 2',
-                    'Obs' => '
-1 x 4100615 Antena Gps 1500 Ag Leader - 128
- Uni: R$83.33 | Total: R$83.33
-1 x 4002673-18 Chicote Eletrico Ag Leader - 311
- Uni: R$142.86 | Total: R$142.86
-1 x 4100858 Display Cable Kit - Can a W-22ft Power Ag Leader - 580
- Uni: R$714.29 | Total: R$714.29
-1 x 41000252 Display Kit - Compass Ag Leader - 584
- Uni: R$4761.9 | Total: R$4761.9',
-                    'ValorBruto' => 3000,
-                    'ValorVencimento' => 3000,
-                    'ValorPagamento' => 3000,
-                    'DataCompetencia' => '2016-07-28T10:53:00',
-                    'DataVencimento' => '2016-09-25T00:00:00',
-                    'DataPagamento' => '2016-09-20T00:00:00',
-                    'DataAgendaPagamento' => null,
-                    'IDPlanoContaClassificacao' => '40106          ',
-                    'ContaClassificacao' => [
-                        'ID' => '40106          ',
-                        'Nome' => 'Materiais de Limpeza',
-                        'Hierarquia' => null
-                    ],
-                    'IDPlanoContaPagamento' => '10103          ',
-                    'ContaPagamento' => [
-                        'ID' => '10103          ',
-                        'Nome' => 'Caixa Local',
-                        'Hierarquia' => null
-                    ],
-                    'IDCentroCusto' => 1,
-                    'CentroCusto' => [
-                        'ID' => 1,
-                        'NomeExibicao' => 'Administrativo',
-                        'Hierarquia' => null
-                    ],
+                    'Descri' => 'string',
+                    'DtaVenc' => $invoice['invoice_duedate'],
+                    'VlrVenc' => $invoice['total'],
+                    'VlrBruto' => $invoice['amount'],
                     'IDPessoa' => $idClient,
                     'Pessoa' => [
                         'ID' => $idClient,
                         'NomeExibicao' => $clientRemote->corporate_name,
                         'Nome' => $clientRemote->corporate_name,
                         'CPFCNPJ' => $clientRemote->document,
-                        'IDCentroCusto' => null,
-                        'CentroCusto' => null
+                        'TelefonePrincipal' => $clientRemote->phone,
+                        'Cidade' => [
+                            'ID' => 0,
+                            'Nome' => $clientRemote->city,
+                            'UF' => $clientRemote->state,
+                            'CodIBGE' => 0,
+                            'AliquotaISS' => 0,
+                            'IDGoiania' => 0,
+                            'IDPais' => 0
+                        ]
                     ],
-                    'FormaPagamento' => 99,
-                    'DescricaoFormaPagamento' => 'Outros',
-                    'NroBoleto' => null,
-                    'IDMoeda' => 1,
-                    'NroNotaFiscal' => 2479,
-                    'DataHoraInclusao' => '2020-04-13T14:04:56.17',
-                    'IDUsuarioInclusao' => 1,
-                    'DataHoraSituacao' => '2020-05-14T15:28:57.323',
-                    'IDUsuarioSituacao' => 1,
-                    'Situacao' => 2,
-                    'ArquivoGerado' => false,
-                    'DataArquivoGerado' => null,
-                    'IDTabelaImposto' => null,
-                    'IDTipoImposto' => null,
-                    'IDExtratoBanco' => null,
-                    'IDConciliacaoBancaria' => null,
-                    'NomePessoa' => 'Gti',
-                    'NomeCentroCusto' => 'Administrativo',
-                    'NomeContaClassificacao' => 'Materiais de Limpeza',
-                    'NomeContaPagamento' => 'Caixa Local',
+                    'IDMoeda' => 0,
+                    'IDCentroCusto' => 0,
+                    'IDPlanoContaOrigem' => 'string',
+                    'Obs' => 'string',
+                    'IDContaBanco' => 0,
+                    'IDBancoRecebimento' => 0,
+                    '_DataPagamento' => $invoice['invoice_date'],
+                    'DtaPagto' => $invoice['invoice_date'],
+                    'VlrPagto' => $invoice['paid'],
+                    'IDPlanoContaPagto' => 'string',
+                    'IDMoedaCaixa' => 0,
+                    '_DataCompetencia' => $invoice['invoice_date'],
+                    'DtaCompet' => $invoice['invoice_date'],
+                    'IDTipoReceb' => 0,
+                    'PercJurosDiario' => 0,
+                    'PercMultaAtraso' => 0,
+                    'VlrDesc' => 0,
+                    'DataLimiteDesconto' => $invoice['invoice_duedate'],
+                    'IDModeloRelatorioBoleto' => 0,
+                    'IDNotaFiscal' => $invoice['invoice_number'],
+                    'IDNotaFiscalProduto' => $invoice['invoice_number'],
+                    'NroDoc' => $invoice['invoice'],
+                    'IDContrato' => 0,
+                    'SitConta' => 0,
+                    'DescricaoSituacao' => 'string',
+                    'DataVencAtual' => $invoice['invoice_duedate'],
+                    'IDVenda' => 0,
+                    'IDBoleto' => $invoice['invoice'],
+                    'NossoNumeroBoleto' => 'string',
+                    'Detalhamento' => 'string',
+                    'IDUsuarioInclusao' => 0,
+                    'DataHoraInclusao' => Carbon::now()->toDateTimeString(),
+                    'IDExtratoBanco' => 0,
+                    'IDConciliacaoBancaria' => 0,
+                    'IDReguaCobranca' => 0,
+                    'NomePessoa' => $clientRemote->corporate_name,
+                    'CPFCNPJ' => $clientRemote->document,
+                    'NomeCentroCusto' => 'string',
+                    'NomeContaOrigem' => 'string',
+                    'NomeContaDestino' => 'string',
+                    'NomeTipoReceb' => 'string',
+                    'NroNFSe' => 'string',
+                    'NroNFe' => $invoice['invoice_number'],
                     'SimbMoeda' => 'R$',
-                    'CodigoBancoPessoa' => null,
-                    'NomeBancoPessoa' => null,
-                    'AgenciaPessoa' => null,
-                    'ContaCorrentePessoa' => null,
-                    'OperacaoContaPessoa' => null,
-                    'CPFCNPJPessoa' => $clientRemote->document,
-                    'IDProjeto' => null,
-                    'Projeto' => null,
-                    'TransacaoExtrato' => null
+                    'IDNFSe' => 0,
+                    'ChaveAcessoNFSe' => 'string',
+                    'LinkNFSe' => $invoice['link_nfe'],
+                    'LinkBoleto' => 'string',
+                    'LinhaDigitavelBoleto' => $invoice['invoice_string'],
+                    'ChaveAcessoExterno' => 'string',
+                    'CodigoExterno' => 'string',
+                    'IDFaturaContrato' => 0,
+                    'IDPessoaTokenCartaoCredito' => 0,
+                    'ObjetoGateway' => 'string',
+                    'IDContaReceberOrigem' => 0,
+                    'PessoaEmissor' => null,
+                    'PessoaDevedor' => null,
+                    'VlrJuros' => 0,
+                    'VlrTaxa' => 0,
+                    'VlrDescReceb' => 0
                 ];
 
                 $request = $this->nimblyInvoiceService->createInvoice($params);
 
-                $invoice->update(['send_nimbly' => 1]);
+                $dataInvoice = Json::decode($request, 1);
 
-                dd($request);
-
+                $invoice->update([
+                    'send_nimbly' => 1,
+                    'send_nimbly_date' => Carbon::now()->toDateTimeString(),
+                    'id_nimbly_invoice' => $dataInvoice['ID']
+                ]);
             }
         }
     }

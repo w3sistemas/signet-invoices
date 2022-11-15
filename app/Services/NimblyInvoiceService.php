@@ -9,7 +9,7 @@ use GuzzleHttp\Exception\GuzzleException;
 class NimblyInvoiceService
 {
     /**
-     * @var Client
+     * @var $client
      */
     private $http;
 
@@ -72,7 +72,10 @@ class NimblyInvoiceService
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'App' => env('NIMBLY_APP'),
-                    'CN' => env('NIMBLY_CN')
+                    'CN' => env('NIMBLY_CN'),
+                    'IDUsr' => env('NIMBLY_IDUSR'),
+                    'Hash' => env('NIMBLY_HASH'),
+                    'Usr' => env('NIMBLY_USR'),
                 ],
                 'json' => $params
             ]);
