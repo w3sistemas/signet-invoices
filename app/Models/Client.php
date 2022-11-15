@@ -11,4 +11,8 @@ class Client extends Model
     use HasFactory;
 
     protected $connection = 'mysql_retell';
+
+    public $fillable = [
+        'send_nimbly'
+    ];
 }

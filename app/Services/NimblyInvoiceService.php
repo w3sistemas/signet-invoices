@@ -21,7 +21,7 @@ class NimblyInvoiceService
     /**
      * @throws GuzzleException
      */
-    private function createClient($params): string
+    public function createClient($params): string
     {
         try {
             $request = $this->http->post(env('NIMBLY_API') . NimblyEnum::PEOPLE, [
@@ -54,6 +54,27 @@ class NimblyInvoiceService
                 'query' => [
                     'CPFCNPJ' => $document
                 ]
+            ]);
+
+            return $request->getBody()->getContents();
+        }catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function createInvoice($params): string
+    {
+        try {
+            $request = $this->http->post(env('NIMBLY_API') . NimblyEnum::PEOPLE, [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'App' => env('NIMBLY_APP'),
+                    'CN' => env('NIMBLY_CN')
+                ],
+                'json' => $params
             ]);
 
             return $request->getBody()->getContents();

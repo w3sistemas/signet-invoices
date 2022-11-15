@@ -54,7 +54,7 @@ class NimblySendInvoice extends Command
      */
     public function handle(): void
     {
-        $invoices = Invoice::select('customer_code')
+        $invoices = Invoice::select('id', 'customer_code', 'send_nimbly')
             ->where([
             'send_nimbly' => 0
         ])
@@ -66,11 +66,40 @@ class NimblySendInvoice extends Command
                 $clientRemote = Client::where('code', $invoice['customer_code'])->first();
                 if ($clientRemote) {
                     if (!$clientRemote->id_nimbly) {
+
+                        $params = [
+                            'Nome' => $clientRemote->corporate_name,
+                            'NomeFantasia' => $clientRemote->corporate_name,
+                            'NomeExibicao' => $clientRemote->corporate_name,
+                            'CPFCNPJ' => $clientRemote->document,
+                            'DataNascimentoFundacao' => null,
+                            'IE' => null,
+                            'Logradouro' => $clientRemote->street,
+                            'Nro' => $clientRemote->number,
+                            'Bairro' => $clientRemote->district,
+                            'CEP' => $clientRemote->zipcode,
+                            'Cidade' => $clientRemote->city,
+                            'UF' => $clientRemote->state,
+                            'Email' => $clientRemote->email,
+                            'Telefone' => (!empty($clientRemote->area_code) ? $clientRemote->area_code . $clientRemote->phone : null),
+                            'Celular' => null,
+                            'Cliente' => true
+                        ];
+
+                        $request = $this->nimblyInvoiceService->createClient($params);
+
+                        $clientNimbly = Json::decode($request, 1);
+
+                        $clientRemote->id_nimbly = $clientNimbly['ID'];
+                        $clientRemote->save();
+
+                    } else {
                         $request = $this->nimblyInvoiceService->getClient($clientRemote->document);
                         if ($request) {
                             $client = Json::decode($request, 1);
 
                             if (!empty($client)) {
+                                $invoice->update(['send_nimbly' => 1]);
                                 dd($client[0]['ID']);
                             }
                         }
