@@ -199,10 +199,40 @@ class NimblySendInvoice extends Command
 
                 $dataInvoice = Json::decode($request, 1);
 
+                $ticketData = [
+                    'ID' => 0,
+                    'DataHoraEmissao' => $invoice['invoice_date'],
+                    'DataVencimento' => $invoice['invoice_duedate'],
+                    'Valor' => $invoice['total'],
+                    'LinhaDigitavel' => $invoice['invoice_string'],
+                    'Descricao' => 'Boleto',
+                    'IDContaRec' => 0,
+                    'CodigoBancoDigito' => 0,
+                    'Instrucoes' => 'Pagar',
+                    'IDContaBanco' => 0,
+                    'IDTipoRecebimento' => 0,
+                    'NossoNumero' => 0,
+                    'NossoNumeroFormatado' => 0,
+                    'IDPessoaCedente' => $idClient,
+                    'IDPessoaSacado' => 0,
+                    'AgenciaCodigoCedente' => 0,
+                    'CarteiraCobranca' => 0,
+                    'NumeroDocumento' => $clientRemote->document,
+                    'CodigoBarras' => 0,
+                    'ValorJurosDiario' => 0,
+                    'ValorMulta' => 0,
+                    'ValorDesconto' => 0
+                ];
+
+                $request = $this->nimblyInvoiceService->sentTicketData($ticketData);
+
+                $outputTicketData = Json::decode($request, 1);
+
                 $invoice->update([
                     'send_nimbly' => 1,
                     'send_nimbly_date' => Carbon::now()->toDateTimeString(),
-                    'id_nimbly_invoice' => $dataInvoice['ID']
+                    'id_nimbly_invoice' => $dataInvoice['ID'],
+                    'ticket_id' => $outputTicketData['ID'],
                 ]);
             }
         }

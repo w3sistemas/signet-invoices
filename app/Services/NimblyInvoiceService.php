@@ -85,4 +85,28 @@ class NimblyInvoiceService
             return $e->getMessage();
         }
     }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function sentTicketData($params): string
+    {
+        try {
+            $request = $this->http->post(env('NIMBLY_API_INVOICE') . NimblyEnum::SENT_TICKET_DATA, [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'App' => env('NIMBLY_APP'),
+                    'CN' => env('NIMBLY_CN'),
+                    'IDUsr' => env('NIMBLY_IDUSR'),
+                    'Hash' => env('NIMBLY_HASH'),
+                    'Usr' => env('NIMBLY_USR'),
+                ],
+                'json' => $params
+            ]);
+
+            return $request->getBody()->getContents();
+        }catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }

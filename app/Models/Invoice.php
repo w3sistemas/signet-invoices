@@ -29,6 +29,7 @@ class Invoice extends Model
         'link_nfe',
         'send_nimbly',
         'id_nimbly_invoice',
+        'ticket_id',
         'send_nimbly_date'
     ];
 }
