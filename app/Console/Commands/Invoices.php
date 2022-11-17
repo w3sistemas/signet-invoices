@@ -58,48 +58,50 @@ class Invoices extends Command
         $month = Carbon::now()->month;
         $year = Carbon::now()->year;
 
-        $params = [
-            'partner' => 'ABNCS',
-            'createdAt' => "01/{$month}/{$year}"
-        ];
+        foreach (SignetEnum::ABNS as $abn) {
+            $params = [
+                'partner' => $abn,
+                'createdAt' => "01/{$month}/{$year}"
+            ];
 
-        $request = $this->signetInvoiceService->getListInvoices($params, SignetEnum::INVOICES);
+            $request = $this->signetInvoiceService->getListInvoices($params, SignetEnum::INVOICES);
 
-        if ($request) {
+            if ($request) {
 
-            $output = Json::decode($request, 1);
+                $output = Json::decode($request, 1);
 
-            foreach ($output['detail'] as $row) {
+                foreach ($output['detail'] as $row) {
 
-                $data = [
-                    'abn' => 'ABNCS',
-                    'invoice' => $row['invoice'],
-                    'customer_code' => $row['customer_code'],
-                    'company_name' => $row['company_name'],
-                    'cnpj' => $row['cnpj'],
-                    'status' => $row['status'],
-                    'qty' => $row['qty'],
-                    'amount' => $row['amount'],
-                    'total' => $row['total'],
-                    'paid' => $row['paid'],
-                    'paid_date' => $row['paid_date'],
-                    'invoice_date' => $row['invoice_date'],
-                    'invoice_duedate' => $row['invoice_duedate'],
-                    'invoice_number' => $row['invoice_number'],
-                    'invoice_key' => $row['invoice_key'],
-                    'invoice_string' => $row['invoice_string'],
-                    'link_nfe' => $row['linkNFe']
-                ];
+                    $data = [
+                        'abn' => $abn,
+                        'invoice' => $row['invoice'],
+                        'customer_code' => $row['customer_code'],
+                        'company_name' => $row['company_name'],
+                        'cnpj' => $row['cnpj'],
+                        'status' => $row['status'],
+                        'qty' => $row['qty'],
+                        'amount' => $row['amount'],
+                        'total' => $row['total'],
+                        'paid' => $row['paid'],
+                        'paid_date' => $row['paid_date'],
+                        'invoice_date' => $row['invoice_date'],
+                        'invoice_duedate' => $row['invoice_duedate'],
+                        'invoice_number' => $row['invoice_number'],
+                        'invoice_key' => $row['invoice_key'],
+                        'invoice_string' => $row['invoice_string'],
+                        'link_nfe' => $row['linkNFe']
+                    ];
 
-                $invoice = Invoice::where('invoice',  $row['invoice'])
-                    ->whereMonth('invoice_date', $month)
-                    ->whereYear('invoice_date', $year)
-                    ->first();
+                    $invoice = Invoice::where('invoice',  $row['invoice'])
+                        ->whereMonth('invoice_date', $month)
+                        ->whereYear('invoice_date', $year)
+                        ->first();
 
-                if ($invoice) {
-                    $invoice->update($data);
-                } else {
-                    Invoice::create($data);
+                    if ($invoice) {
+                        $invoice->update($data);
+                    } else {
+                        Invoice::create($data);
+                    }
                 }
             }
         }
