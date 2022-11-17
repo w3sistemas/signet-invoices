@@ -11,7 +11,11 @@ class ChangeInvoiceStatusObserver
     {
         if($invoice->isDirty('status')) {
             SentInvoice::create([
-                'invoice_id' => $invoice->id
+                'invoice_id' => $invoice->id,
+                'paid_date' => $invoice->paid_date,
+                'paid' => $invoice->paid,
+                'id_nimbly_invoice' => $invoice->id_nimbly_invoice,
+                'status' => $invoice->status
             ]);
         }
     }

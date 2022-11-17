@@ -11,6 +11,10 @@ class SentInvoice extends Model
 
     public $fillable = [
         'invoice_id',
-        'sent'
+        'sent',
+        'paid_date',
+        'paid',
+        'id_nimbly_invoice',
+        'status'
     ];
 }

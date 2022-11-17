@@ -57,9 +57,7 @@ class NimblySendInvoice extends Command
     {
         $invoices = Invoice::where([
             'send_nimbly' => 0
-        ])
-            ->limit(1)
-            ->get();
+        ])->get();
 
         $idClient = null;
 
@@ -139,8 +137,8 @@ class NimblySendInvoice extends Command
                     'Obs' => 'string',
                     'IDContaBanco' => 0,
                     'IDBancoRecebimento' => 0,
-                    '_DataPagamento' => $invoice['invoice_date'],
-                    'DtaPagto' => $invoice['invoice_date'],
+                    '_DataPagamento' => $invoice['paid_date'],
+                    'DtaPagto' => $invoice['paid_date'],
                     'VlrPagto' => $invoice['paid'],
                     'IDPlanoContaPagto' => 'string',
                     'IDMoedaCaixa' => 0,
@@ -195,7 +193,7 @@ class NimblySendInvoice extends Command
                     'VlrDescReceb' => 0
                 ];
 
-                $request = $this->nimblyInvoiceService->createInvoice($params);
+                $request = $this->nimblyInvoiceService->createOrUpdateInvoice($params);
 
                 $dataInvoice = Json::decode($request, 1);
 
@@ -224,16 +222,18 @@ class NimblySendInvoice extends Command
                     'ValorDesconto' => 0
                 ];
 
-                $request = $this->nimblyInvoiceService->sentTicketData($ticketData);
+                //$request = $this->nimblyInvoiceService->sentTicketData($ticketData);
 
-                $outputTicketData = Json::decode($request, 1);
+                //if ($request) {
+                    //$outputTicketData = Json::decode($request, 1);
 
-                $invoice->update([
-                    'send_nimbly' => 1,
-                    'send_nimbly_date' => Carbon::now()->toDateTimeString(),
-                    'id_nimbly_invoice' => $dataInvoice['ID'],
-                    'ticket_id' => $outputTicketData['ID'],
-                ]);
+                    $invoice->update([
+                        'send_nimbly' => 1,
+                        'send_nimbly_date' => Carbon::now()->toDateTimeString(),
+                        'id_nimbly_invoice' => $dataInvoice['ID'],
+                        //'ticket_id' => $outputTicketData['ID'],
+                    ]);
+                //}
             }
         }
     }

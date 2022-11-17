@@ -65,7 +65,7 @@ class NimblyInvoiceService
     /**
      * @throws GuzzleException
      */
-    public function createInvoice($params): string
+    public function createOrUpdateInvoice($params): string
     {
         try {
             $request = $this->http->post(env('NIMBLY_API') . NimblyEnum::FINANCIAL_RECEPTION, [
