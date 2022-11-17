@@ -222,18 +222,19 @@ class NimblySendInvoice extends Command
                     'ValorDesconto' => 0
                 ];
 
-                //$request = $this->nimblyInvoiceService->sentTicketData($ticketData);
+                $request = $this->nimblyInvoiceService->sentTicketData($ticketData);
 
-                //if ($request) {
-                    //$outputTicketData = Json::decode($request, 1);
+                if ($request) {
+                    $outputTicketData = Json::decode($request, 1);
 
                     $invoice->update([
                         'send_nimbly' => 1,
                         'send_nimbly_date' => Carbon::now()->toDateTimeString(),
                         'id_nimbly_invoice' => $dataInvoice['ID'],
-                        //'ticket_id' => $outputTicketData['ID'],
+                        'payload' => Json::encode($params),
+                        'ticket_id' => $outputTicketData['ID'],
                     ]);
-                //}
+                }
             }
         }
     }

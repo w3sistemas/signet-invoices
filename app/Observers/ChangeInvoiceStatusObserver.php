@@ -15,7 +15,8 @@ class ChangeInvoiceStatusObserver
                 'paid_date' => $invoice->paid_date,
                 'paid' => $invoice->paid,
                 'id_nimbly_invoice' => $invoice->id_nimbly_invoice,
-                'status' => $invoice->status
+                'status' => $invoice->status,
+                'payload' => $invoice->payload
             ]);
         }
     }

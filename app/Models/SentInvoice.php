@@ -15,6 +15,7 @@ class SentInvoice extends Model
         'paid_date',
         'paid',
         'id_nimbly_invoice',
-        'status'
+        'status',
+        'payload'
     ];
 }
