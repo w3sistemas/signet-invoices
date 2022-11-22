@@ -9,9 +9,10 @@ class SignetEnum
     CONST INVOICE_DETAIL = self::INVOICES . '/detail';
 
     CONST ABNS = [
-        'ABN',
         'ABNCS',
-        'ABN7',
-        'SNCC'
+        'SNCC',
+        'SCP',
+        'ABN',
+        'ABN7'
     ];
 }

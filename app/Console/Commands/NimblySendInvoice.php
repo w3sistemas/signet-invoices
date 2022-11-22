@@ -65,6 +65,9 @@ class NimblySendInvoice extends Command
             foreach ($invoices as $invoice){
                 $clientRemote = Client::where('code', $invoice['customer_code'])->first();
 
+                /*
+                 * Grava Cliente
+                 * */
                 if ($clientRemote) {
                     if (!$clientRemote->id_nimbly) {
                         $params = [
@@ -107,6 +110,9 @@ class NimblySendInvoice extends Command
                     }
                 }
 
+                /*
+                 * Grava Rececimento
+                 * */
                 $params = [
                     '_DataVencimento' => $invoice['invoice_duedate'],
                     'ID' => 0,
@@ -115,26 +121,9 @@ class NimblySendInvoice extends Command
                     'VlrVenc' => $invoice['total'],
                     'VlrBruto' => $invoice['amount'],
                     'IDPessoa' => $idClient,
-                    'Pessoa' => [
-                        'ID' => $idClient,
-                        'NomeExibicao' => $clientRemote->corporate_name,
-                        'Nome' => $clientRemote->corporate_name,
-                        'CPFCNPJ' => $clientRemote->document,
-                        'TelefonePrincipal' => $clientRemote->phone,
-                        'Cidade' => [
-                            'ID' => 0,
-                            'Nome' => $clientRemote->city,
-                            'UF' => $clientRemote->state,
-                            'CodIBGE' => 0,
-                            'AliquotaISS' => 0,
-                            'IDGoiania' => 0,
-                            'IDPais' => 0
-                        ]
-                    ],
-                    'IDMoeda' => 0,
+                    'IDMoeda' => 1,
                     'IDCentroCusto' => 0,
                     'IDPlanoContaOrigem' => 'string',
-                    'Obs' => 'string',
                     'IDContaBanco' => 0,
                     'IDBancoRecebimento' => 0,
                     '_DataPagamento' => $invoice['paid_date'],
@@ -197,6 +186,9 @@ class NimblySendInvoice extends Command
 
                 $dataInvoice = Json::decode($request, 1);
 
+                /*
+                 * Grava Dados Boleto
+                 * */
                 $ticketData = [
                     'ID' => 0,
                     'DataHoraEmissao' => $invoice['invoice_date'],
