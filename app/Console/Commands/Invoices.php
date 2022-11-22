@@ -89,6 +89,11 @@ class Invoices extends Command
                         'invoice_number' => $row['invoice_number'],
                         'invoice_key' => $row['invoice_key'],
                         'invoice_string' => $row['invoice_string'],
+                        'our_number' => $row['our_number'],
+                        'late_payment' => $row['late_payment'],
+                        'bank' => $row['invoice_string'],
+                        'discounts' => $row['discounts'],
+                        'increase' => $row['increase'],
                         'link_nfe' => $row['linkNFe']
                     ];
 
