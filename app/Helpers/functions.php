@@ -6,8 +6,6 @@ function getRatesByBank(int $bank): array
 {
     $rates = [];
 
-    $bank = substr($bank, 0, 3);
-
     switch ($bank) {
         case SignetEnum::DAYCOVAL:
         case SignetEnum::BRADESCO:
