@@ -6,6 +6,8 @@ function getDiscountPeerBank(int $bank): array
 {
     $fees = [];
 
+    $bank = substr($bank, 0, 3);
+
     switch ($bank) {
         case SignetEnum::DAYCOVAL:
         case SignetEnum::BRADESCO:
