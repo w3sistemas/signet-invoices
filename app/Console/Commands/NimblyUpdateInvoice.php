@@ -63,13 +63,15 @@ class NimblyUpdateInvoice extends Command
         if ($invoices) {
             foreach ($invoices as $invoice){
 
+                $payloadDown = [];
+
                 $payload = Json::decode($invoice['payload'], 1);
 
-                $payload['ID'] = $invoice['id_nimbly_invoice'];
-                $payload['DtaPagto'] = $invoice['paid_date'];
-                $payload['VlrPagto'] = $invoice['paid'];
+                $payloadDown['ID'] = $invoice['id_nimbly_invoice'];
+                $payloadDown['DtaPagto'] = $invoice['paid_date'];
+                $payloadDown['VlrPagto'] = $invoice['paid'];
 
-                $request = $this->nimblyInvoiceService->createOrUpdateInvoice($payload);
+                $request = $this->nimblyInvoiceService->createOrUpdateInvoice($payloadDown);
 
                 if ($request) {
                     $invoice->update([
