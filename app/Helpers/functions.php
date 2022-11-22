@@ -2,7 +2,7 @@
 
 use App\Enumerators\SignetEnum;
 
-function getRatesPeerBank(int $bank): array
+function getRatesByBank(int $bank): array
 {
     $rates = [];
 
