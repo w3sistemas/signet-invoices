@@ -56,8 +56,11 @@ class NimblySendInvoice extends Command
     public function handle(): void
     {
         $invoices = Invoice::where([
-            'send_nimbly' => 0
-        ])->get();
+            'send_nimbly' => 0,
+            'status' => 'A'
+        ])
+            ->whereNotNull('invoice_string')
+            ->get();
 
         $idClient = null;
 
@@ -148,12 +151,12 @@ class NimblySendInvoice extends Command
                         'IDContaRec' => $dataInvoice['ID'],
                         'NossoNumero' => $invoice['our_number'],
                         'NossoNumeroFormatado' => $invoice['our_number'],
-                        'IDPessoaCedente' => 0,
+                        'IDPessoaCedente' => 1,
                         'IDPessoaSacado' => $idClient,
                         'NumeroDocumento' => $clientRemote->document,
                         'ValorJurosDiario' => $rates['day'] ?? 0,
                         'ValorMulta' => $rates['fine'] ?? 0,
-                        'ValorDesconto' => $invoice['discounts']
+                        'ValorDesconto' => $invoice['discounts'] ?? 0
                     ];
 
                     $request = $this->nimblyInvoiceService->sentTicketData($ticketData);
