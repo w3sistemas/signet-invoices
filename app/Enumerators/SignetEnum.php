@@ -16,10 +16,11 @@ class SignetEnum
         'ABN7'
     ];
 
-    CONST BANKS = [
-        '237' => 'BANCO BRADESCO S.A',
-        '341' => 'ITAÚ UNIBANCO S.A',
-        '339' => 'BANCO SANTANDER (BRASIL) S.A',
-        '707' => 'BANCO DAYCOVAL S.A.'
-    ];
+    CONST BRADESCO = 237;
+
+    CONST ITAU = 341;
+
+    CONST SANTANDER = 339;
+
+    CONST DAYCOVAL = 707;
 }
