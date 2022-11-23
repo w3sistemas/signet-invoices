@@ -8,6 +8,15 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 class Kernel extends ConsoleKernel
 {
     /**
+     * The Artisan commands provided by your application.
+     *
+     * @var array
+     */
+    protected $commands = [
+        Commands\Invoices::class
+    ];
+
+    /**
      * Define the application's command schedule.
      *
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
@@ -15,7 +24,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('command:get-list-invoices')->daily();
+
+        $schedule->command('command:nimbly-send-invoice')->dailyAt('04:00');
+
+        $schedule->command('command:nimbly-update-invoice')->dailyAt('06:00');
+
+        $schedule->command('command:get-invoice-open')->dailyAt('12:00');
     }
 
     /**
