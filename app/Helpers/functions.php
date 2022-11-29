@@ -1,6 +1,7 @@
 <?php
 
 use App\Enumerators\SignetEnum;
+use Carbon\Carbon;
 
 function getRatesByBank(int $bank): array
 {
@@ -32,4 +33,17 @@ function getRatesByBank(int $bank): array
     }
 
     return $rates;
+}
+
+function setStringDescription($invoiceDate, $invoiceNumber): string
+{
+    $first = Carbon::createFromFormat('Y-m-d h:i:s', $invoiceDate)
+        ->firstOfMonth()
+        ->format('d/m/Y');
+
+    $end = Carbon::createFromFormat('Y-m-d h:i:s', $invoiceDate)
+        ->endOfMonth()
+        ->format('d/m/Y');
+
+    return 'NF: ' . $invoiceNumber . ' | Competência ( ' . $first . ' - ' . $end . ' ) ';
 }

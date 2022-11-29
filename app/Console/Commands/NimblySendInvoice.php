@@ -57,120 +57,90 @@ class NimblySendInvoice extends Command
     {
         $invoices = Invoice::where([
             'send_nimbly' => 0,
-            'status' => 'A'
+            //'status' => 'A'
         ])
             ->whereNotNull('invoice_string')
             ->get();
 
-        $idClient = null;
-
         if ($invoices) {
             foreach ($invoices as $invoice){
 
-                $clientRemote = Client::where('code', $invoice['customer_code'])->first();
+                $request = $this->nimblyInvoiceService->getClient($invoice['cnpj']);
 
-                /*
-                 * Grava Cliente
-                 * */
-                if ($clientRemote) {
-                    if (!$clientRemote->id_nimbly) {
+                if ($request) {
+                    $client = Json::decode($request, 1);
+
+                    if (!empty($client)) {
+
+                        /*
+                         * Pessoa teste Local ou Pega Cliente da Base de Produção
+                         * */
+                        if (env('APP_ENV') === 'local') {
+                            $idClient = 31;
+                        } else {
+                            $idClient = $client[0]['ID'];
+                        }
+
+                        /*
+                         * Grava Rececimento
+                         * */
                         $params = [
-                            'Nome' => $clientRemote->corporate_name,
-                            'NomeFantasia' => $clientRemote->corporate_name,
-                            'NomeExibicao' => $clientRemote->corporate_name,
-                            'CPFCNPJ' => $clientRemote->document,
-                            'DataNascimentoFundacao' => null,
-                            'IE' => null,
-                            'Logradouro' => $clientRemote->street,
-                            'Nro' => $clientRemote->number,
-                            'Bairro' => $clientRemote->district,
-                            'CEP' => $clientRemote->zipcode,
-                            'Cidade' => $clientRemote->city,
-                            'UF' => $clientRemote->state,
-                            'Email' => $clientRemote->email,
-                            'Telefone' => (!empty($clientRemote->area_code) ? $clientRemote->area_code . $clientRemote->phone : null),
-                            'Celular' => null,
-                            'Cliente' => true
+                            'ID' => 0,
+                            'Descri' => setStringDescription($invoice['invoice_date'], $invoice['invoice_number']),
+                            'DtaVenc' => $invoice['invoice_duedate'],
+                            'VlrVenc' => $invoice['total'],
+                            'VlrBruto' => $invoice['amount'],
+                            'IDPessoa' => $idClient,
+                            'IDCentroCusto' => $idClient['IDCentroCustoPreferencial'],
+                            'DtaPagto' => $invoice['paid_date'],
+                            'VlrPagto' => $invoice['paid'],
+                            'DtaCompet' => $invoice['invoice_date'],
+                            'IDTipoReceb' => 9, /*Banco CheckOK*/
+                            'DataLimiteDesconto' => $invoice['invoice_duedate'],
+                            'DataVencAtual' => $invoice['invoice_duedate'],
+                            'NroDoc' => $invoice['invoice_number'],
+                            'LinkNFSe' => $invoice['link_nfe']
                         ];
 
-                        $request = $this->nimblyInvoiceService->createClient($params);
+                        $request = $this->nimblyInvoiceService->createOrUpdateInvoice($params);
 
-                        $clientNimbly = Json::decode($request, 1);
+                        $dataInvoice = Json::decode($request, 1);
 
-                        $idClient = $clientNimbly['ID'];
+                        /*
+                         * Grava Dados Boleto
+                         * */
+                        $rates = getRatesByBank($invoice['total']);
 
-                        $clientRemote->id_nimbly = $clientNimbly['ID'];
-                        $clientRemote->save();
+                        $ticketData = [
+                            'ID' => 0,
+                            'DataHoraEmissao' => $invoice['invoice_date'],
+                            'DataVencimento' => $invoice['invoice_duedate'],
+                            'Valor' => $invoice['total'],
+                            'LinhaDigitavel' => $invoice['invoice_string'],
+                            'IDContaRec' => $dataInvoice['ID'],
+                            'NossoNumero' => $invoice['our_number'],
+                            'NossoNumeroFormatado' => $invoice['our_number'],
+                            'IDPessoaCedente' => 97,
+                            'IDPessoaSacado' => $idClient,
+                            'NumeroDocumento' => $invoice['invoice'],
+                            'ValorJurosDiario' => $rates['day'] ?? 0,
+                            'ValorMulta' => $rates['fine'] ?? 0,
+                            'ValorDesconto' => $invoice['discounts'] ?? 0
+                        ];
 
-                    } else {
-                        $request = $this->nimblyInvoiceService->getClient($clientRemote->document);
+                        $request = $this->nimblyInvoiceService->sentTicketData($ticketData);
+
                         if ($request) {
-                            $client = Json::decode($request, 1);
+                            $outputTicketData = Json::decode($request, 1);
 
-                            if (!empty($client)) {
-                                $idClient = $client[0]['ID'];
-                            }
+                            $invoice->update([
+                                'send_nimbly' => 1,
+                                'send_nimbly_date' => Carbon::now()->toDateTimeString(),
+                                'id_nimbly_invoice' => $dataInvoice['ID'],
+                                'payload' => Json::encode($params),
+                                'ticket_id' => $outputTicketData['ID'],
+                            ]);
                         }
-                    }
-
-                    /*
-                 * Grava Rececimento
-                 * */
-                    $params = [
-                        'ID' => 0,
-                        'Descri' => 'string',
-                        'DtaVenc' => $invoice['invoice_duedate'],
-                        'VlrVenc' => $invoice['total'],
-                        'VlrBruto' => $invoice['amount'],
-                        'IDPessoa' => $idClient,
-                        'IDCentroCusto' => null,
-                        'DtaPagto' => $invoice['paid_date'],
-                        'VlrPagto' => $invoice['paid'],
-                        'DtaCompet' => $invoice['invoice_date'],
-                        'IDTipoReceb' => 10,
-                        'DataLimiteDesconto' => $invoice['invoice_duedate'],
-                        'DataVencAtual' => $invoice['invoice_duedate'],
-                        'NroDoc' => $invoice['invoice_number'],
-                        'LinkNFSe' => $invoice['link_nfe']
-                    ];
-
-                    $request = $this->nimblyInvoiceService->createOrUpdateInvoice($params);
-
-                    $dataInvoice = Json::decode($request, 1);
-
-                    /*
-                     * Grava Dados Boleto
-                     * */
-                    $rates = getRatesByBank($invoice['total']);
-                    $ticketData = [
-                        'ID' => 0,
-                        'DataHoraEmissao' => $invoice['invoice_date'],
-                        'DataVencimento' => $invoice['invoice_duedate'],
-                        'Valor' => $invoice['total'],
-                        'LinhaDigitavel' => $invoice['invoice_string'],
-                        'IDContaRec' => $dataInvoice['ID'],
-                        'NossoNumero' => $invoice['our_number'],
-                        'NossoNumeroFormatado' => $invoice['our_number'],
-                        'IDPessoaCedente' => 1,
-                        'IDPessoaSacado' => $idClient,
-                        'NumeroDocumento' => $clientRemote->document,
-                        'ValorJurosDiario' => $rates['day'] ?? 0,
-                        'ValorMulta' => $rates['fine'] ?? 0,
-                        'ValorDesconto' => $invoice['discounts'] ?? 0
-                    ];
-
-                    $request = $this->nimblyInvoiceService->sentTicketData($ticketData);
-
-                    if ($request) {
-                        $outputTicketData = Json::decode($request, 1);
-
-                        $invoice->update([
-                            'send_nimbly' => 1,
-                            'send_nimbly_date' => Carbon::now()->toDateTimeString(),
-                            'id_nimbly_invoice' => $dataInvoice['ID'],
-                            'payload' => Json::encode($params),
-                            'ticket_id' => $outputTicketData['ID'],
-                        ]);
                     }
                 }
             }
