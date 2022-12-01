@@ -56,8 +56,7 @@ class NimblySendInvoice extends Command
     public function handle(): void
     {
         $invoices = Invoice::where([
-            'send_nimbly' => 0,
-            'status' => 'A'
+            'send_nimbly' => 0
         ])
             ->whereNotNull('invoice_string')
             ->get();
