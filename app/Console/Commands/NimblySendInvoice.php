@@ -76,9 +76,9 @@ class NimblySendInvoice extends Command
                          * Pessoa teste Local ou Pega Cliente da Base de Produção
                          * */
                         if (env('APP_ENV') === 'local') {
-                            $idClient = 31;
+                            $idPeople = 31;
                         } else {
-                            $idClient = $client[0]['ID'];
+                            $idPeople = $client[0]['ID'];
                         }
 
                         /*
@@ -90,8 +90,8 @@ class NimblySendInvoice extends Command
                             'DtaVenc' => $invoice['invoice_duedate'],
                             'VlrVenc' => $invoice['total'],
                             'VlrBruto' => $invoice['amount'],
-                            'IDPessoa' => $idClient,
-                            'IDCentroCusto' => $idClient['IDCentroCustoPreferencial'],
+                            'IDPessoa' => $idPeople,
+                            'IDCentroCusto' => $client[0]['IDCentroCustoPreferencial'],
                             'DtaPagto' => $invoice['paid_date'],
                             'VlrPagto' => $invoice['paid'],
                             'DtaCompet' => $invoice['invoice_date'],
@@ -121,7 +121,7 @@ class NimblySendInvoice extends Command
                             'NossoNumero' => $invoice['our_number'],
                             'NossoNumeroFormatado' => $invoice['our_number'],
                             'IDPessoaCedente' => 97,
-                            'IDPessoaSacado' => $idClient,
+                            'IDPessoaSacado' => $idPeople,
                             'NumeroDocumento' => $invoice['invoice'],
                             'ValorJurosDiario' => $rates['day'] ?? 0,
                             'ValorMulta' => $rates['fine'] ?? 0,
