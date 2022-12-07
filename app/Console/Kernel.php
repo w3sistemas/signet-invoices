@@ -28,6 +28,8 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('command:nimbly-send-invoice')->dailyAt('04:00');
 
+        $schedule->command('command:nimbly-send-ticket')->dailyAt('05:00');
+
         $schedule->command('command:nimbly-update-invoice')->dailyAt('06:00');
 
         $schedule->command('command:get-invoice-open')->dailyAt('12:00');

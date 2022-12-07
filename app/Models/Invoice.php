@@ -35,6 +35,7 @@ class Invoice extends Model
         'send_nimbly',
         'id_nimbly_invoice',
         'ticket_id',
+        'send_nimbly_ticket',
         'payload',
         'send_nimbly_date'
     ];

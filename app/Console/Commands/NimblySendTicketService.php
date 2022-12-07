@@ -11,21 +11,21 @@ use Illuminate\Console\Command;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
 
-class NimblySendInvoice extends Command
+class NimblySendTicketService extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'command:nimbly-send-invoice';
+    protected $signature = 'command:nimbly-send-ticket';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Nimbly Send Invoice';
+    protected $description = 'Nimbly Send Ticket';
 
     /**
      * @var NimblyInvoiceService
@@ -56,8 +56,10 @@ class NimblySendInvoice extends Command
     public function handle(): void
     {
         $invoices = Invoice::where([
-            'send_nimbly' => 0
+            'send_nimbly' => 1,
+            'send_nimbly_ticket' => 0
         ])
+            ->whereNotNull('invoice_string')
             ->get();
 
         if ($invoices) {
@@ -80,36 +82,35 @@ class NimblySendInvoice extends Command
                         }
 
                         /*
-                         * Grava Rececimento
+                         * Grava Dados Boleto
                          * */
-                        $params = [
+                        $rates = getRatesByBank($invoice['total']);
+
+                        $ticketData = [
                             'ID' => 0,
-                            'Descri' => setStringDescription($invoice['invoice_date'], $invoice['invoice_number']),
-                            'DtaVenc' => $invoice['invoice_duedate'],
-                            'VlrVenc' => $invoice['total'],
-                            'VlrBruto' => $invoice['amount'],
-                            'IDPessoa' => $idPeople,
-                            'IDCentroCusto' => $client[0]['IDCentroCustoPreferencial'],
-                            'DtaPagto' => $invoice['paid_date'],
-                            'VlrPagto' => $invoice['paid'],
-                            'DtaCompet' => $invoice['invoice_date'],
-                            'IDTipoReceb' => 9, /*Banco CheckOK*/
-                            'DataLimiteDesconto' => $invoice['invoice_duedate'],
-                            'DataVencAtual' => $invoice['invoice_duedate'],
-                            'NroDoc' => $invoice['invoice_number'],
-                            'LinkNFSe' => $invoice['link_nfe']
+                            'DataHoraEmissao' => $invoice['invoice_date'],
+                            'DataVencimento' => $invoice['invoice_duedate'],
+                            'Valor' => $invoice['total'],
+                            'LinhaDigitavel' => $invoice['invoice_string'],
+                            'IDContaRec' => $invoice['id_nimbly_invoice'],
+                            'NossoNumero' => $invoice['our_number'],
+                            'NossoNumeroFormatado' => $invoice['our_number'],
+                            'IDPessoaCedente' => 97,
+                            'IDPessoaSacado' => $idPeople,
+                            'NumeroDocumento' => $invoice['invoice'],
+                            'ValorJurosDiario' => $rates['day'] ?? 0,
+                            'ValorMulta' => $rates['fine'] ?? 0,
+                            'ValorDesconto' => $invoice['discounts'] ?? 0
                         ];
 
-                        $request = $this->nimblyInvoiceService->createOrUpdateInvoice($params);
-
-                        $dataInvoice = Json::decode($request, 1);
+                        $request = $this->nimblyInvoiceService->sentTicketData($ticketData);
 
                         if ($request) {
+                            $outputTicketData = Json::decode($request, 1);
+
                             $invoice->update([
-                                'send_nimbly' => 1,
-                                'send_nimbly_date' => Carbon::now()->toDateTimeString(),
-                                'id_nimbly_invoice' => $dataInvoice['ID'],
-                                'payload' => Json::encode($params)
+                                'send_nimbly_ticket' => 1,
+                                'ticket_id' => $outputTicketData['ID'],
                             ]);
                         }
                     }
