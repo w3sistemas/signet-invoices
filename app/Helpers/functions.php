@@ -35,15 +35,19 @@ function getRatesByBank(int $bank): array
     return $rates;
 }
 
+
+/*
+ * Alterar para mÊs de consumo
+ * */
 function setStringDescription($invoiceDate, $invoiceNumber): string
 {
-    $first = Carbon::createFromFormat('Y-m-d h:i:s', $invoiceDate)
+    $first = Carbon::createFromFormat('Y-m-d h:i:s', $invoiceDate)->subMonth()
         ->firstOfMonth()
         ->format('d/m/Y');
 
-    $end = Carbon::createFromFormat('Y-m-d h:i:s', $invoiceDate)
+    $end = Carbon::createFromFormat('Y-m-d h:i:s', $invoiceDate)->subMonth()
         ->endOfMonth()
         ->format('d/m/Y');
 
-    return 'NF: ' . $invoiceNumber . ' | Competência ( ' . $first . ' - ' . $end . ' ) ';
+    return 'NF: ' . $invoiceNumber . ' | Período ( ' . $first . ' - ' . $end . ' ) ';
 }
