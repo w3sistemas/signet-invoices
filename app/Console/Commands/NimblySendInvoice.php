@@ -69,16 +69,6 @@ class NimblySendInvoice extends Command
                     $client = Json::decode($request, 1);
 
                     if (!empty($client)) {
-
-                        /*
-                         * Pessoa teste Local ou Pega Cliente da Base de Produção
-                         * */
-                        if (env('APP_ENV') === 'local') {
-                            $idPeople = 31;
-                        } else {
-                            $idPeople = $client[0]['ID'];
-                        }
-
                         /*
                          * Grava Rececimento
                          * */
@@ -88,7 +78,7 @@ class NimblySendInvoice extends Command
                             'DtaVenc' => $invoice['invoice_duedate'],
                             'VlrVenc' => $invoice['total'],
                             'VlrBruto' => $invoice['amount'],
-                            'IDPessoa' => $idPeople,
+                            'IDPessoa' => $client[0]['ID'],
                             'IDCentroCusto' => $client[0]['IDCentroCustoPreferencial'],
                             'DtaPagto' => $invoice['paid_date'],
                             'VlrPagto' => $invoice['paid'],

@@ -71,16 +71,6 @@ class NimblySendTicketService extends Command
                     $client = Json::decode($request, 1);
 
                     if (!empty($client)) {
-
-                        /*
-                         * Pessoa teste Local ou Pega Cliente da Base de Produção
-                         * */
-                        if (env('APP_ENV') === 'local') {
-                            $idPeople = 31;
-                        } else {
-                            $idPeople = $client[0]['ID'];
-                        }
-
                         /*
                          * Grava Dados Boleto
                          * */
@@ -96,7 +86,7 @@ class NimblySendTicketService extends Command
                             'NossoNumero' => $invoice['our_number'],
                             'NossoNumeroFormatado' => $invoice['our_number'],
                             'IDPessoaCedente' => 97,
-                            'IDPessoaSacado' => $idPeople,
+                            'IDPessoaSacado' => $client[0]['ID'],
                             'NumeroDocumento' => $invoice['invoice'],
                             'ValorJurosDiario' => $rates['day'] ?? 0,
                             'ValorMulta' => $rates['fine'] ?? 0,
