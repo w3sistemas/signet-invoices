@@ -72,7 +72,7 @@ class Invoices extends Command
 
                 foreach ($output['detail'] as $row) {
 
-                    $data = [
+                    $dataCreate = [
                         'abn' => $abn,
                         'invoice' => $row['invoice'],
                         'customer_code' => $row['customer_code'],
@@ -97,15 +97,21 @@ class Invoices extends Command
                         'link_nfe' => $row['linkNFe']
                     ];
 
+                    $dataUpdate = [
+                        'status' => $row['status'],
+                        'paid' => $row['paid'],
+                        'paid_date' => $row['paid_date']
+                    ];
+
                     $invoice = Invoice::where('invoice',  $row['invoice'])
                         ->whereMonth('invoice_date', $month)
                         ->whereYear('invoice_date', $year)
                         ->first();
 
                     if ($invoice) {
-                        $invoice->update($data);
+                        $invoice->update($dataUpdate);
                     } else {
-                        Invoice::create($data);
+                        Invoice::create($dataCreate);
                     }
                 }
             }
