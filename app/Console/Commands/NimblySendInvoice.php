@@ -83,7 +83,7 @@ class NimblySendInvoice extends Command
                             'DtaPagto' => $invoice['paid_date'],
                             'VlrPagto' => $invoice['paid'],
                             'DtaCompet' => $invoice['invoice_date'],
-                            'IDTipoReceb' => 9, /*Banco CheckOK*/
+                            'IDTipoReceb' => getReceiptTypeByBank($invoice['bank']),
                             'DataLimiteDesconto' => $invoice['invoice_duedate'],
                             'DataVencAtual' => $invoice['invoice_duedate'],
                             'NroDoc' => $invoice['invoice_number'],

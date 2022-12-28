@@ -74,7 +74,7 @@ class NimblySendTicketService extends Command
                         /*
                          * Grava Dados Boleto
                          * */
-                        $rates = getRatesByBank($invoice['total']);
+                        $rates = getRatesByBank($invoice['bank']);
 
                         $ticketData = [
                             'ID' => 0,

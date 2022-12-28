@@ -16,11 +16,11 @@ class SignetEnum
         'ABN7'
     ];
 
-    CONST BRADESCO = 237;
+    CONST BRADESCO = 237; //11
 
-    CONST ITAU = 341;
+    CONST ITAU = 341; //9
 
-    CONST SANTANDER = 339;
+    CONST SANTANDER = 339; //12
 
-    CONST DAYCOVAL = 707;
+    CONST DAYCOVAL = 707; //13
 }

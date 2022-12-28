@@ -51,3 +51,25 @@ function setStringDescription($invoiceDate, $invoiceNumber): string
 
     return 'NF: ' . $invoiceNumber . ' | Período ( ' . $first . ' - ' . $end . ' ) ';
 }
+
+function getReceiptTypeByBank(int $bank): int
+{
+    switch ($bank) {
+        case SignetEnum::BRADESCO:
+            $receipt = 11;
+            break;
+        case SignetEnum::ITAU:
+            $receipt = 9;
+            break;
+        case SignetEnum::SANTANDER:
+            $receipt = 12;
+            break;
+        case SignetEnum::DAYCOVAL:
+            $receipt = 13;
+            break;
+        default:
+            $receipt = 9;
+    }
+
+    return $receipt;
+}
