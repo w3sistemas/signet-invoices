@@ -82,7 +82,7 @@ class Invoices extends Command
                         'qty' => $row['qty'],
                         'amount' => $row['amount'],
                         'total' => $row['total'],
-                        'ticket_value' => getTicketValue($row['invoice_string']),
+                        'ticket_value' => getTicketValue($row['invoice_string']) ?? null,
                         'paid' => $row['paid'],
                         'paid_date' => $row['paid_date'],
                         'invoice_date' => $row['invoice_date'],

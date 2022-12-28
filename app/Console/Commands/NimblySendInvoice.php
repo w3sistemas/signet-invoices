@@ -76,7 +76,7 @@ class NimblySendInvoice extends Command
                             'ID' => 0,
                             'Descri' => setStringDescription($invoice['invoice_date'], $invoice['invoice_number']),
                             'DtaVenc' => $invoice['invoice_duedate'],
-                            'VlrVenc' => $invoice['total'],
+                            'VlrVenc' => $invoice['ticket_value'],
                             'VlrBruto' => $invoice['amount'],
                             'IDPessoa' => $client[0]['ID'],
                             'IDCentroCusto' => $client[0]['IDCentroCustoPreferencial'],

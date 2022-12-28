@@ -99,28 +99,9 @@ class InvoiceOpen extends Command
 
                             if (in_array($row['invoice'], $numbers)) {
                                 $data = [
-                                    'abn' => $abn,
-                                    'invoice' => $row['invoice'],
-                                    'customer_code' => $row['customer_code'],
-                                    'company_name' => $row['company_name'],
-                                    'cnpj' => $row['cnpj'],
                                     'status' => $row['status'],
-                                    'qty' => $row['qty'],
-                                    'amount' => $row['amount'],
-                                    'total' => $row['total'],
                                     'paid' => $row['paid'],
-                                    'paid_date' => $row['paid_date'],
-                                    'invoice_date' => $row['invoice_date'],
-                                    'invoice_duedate' => $row['invoice_duedate'],
-                                    'invoice_number' => $row['invoice_number'],
-                                    'invoice_key' => $row['invoice_key'],
-                                    'invoice_string' => $row['invoice_string'],
-                                    'our_number' => $row['our_number'],
-                                    'late_payment' => $row['late_payment'],
-                                    'bank' => $row['bank'],
-                                    'discounts' => $row['discounts'],
-                                    'increase' => $row['increase'],
-                                    'link_nfe' => $row['linkNFe']
+                                    'paid_date' => $row['paid_date']
                                 ];
 
                                 $invoice = Invoice::where([

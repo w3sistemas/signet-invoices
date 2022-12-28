@@ -80,7 +80,7 @@ class NimblySendTicketService extends Command
                             'ID' => 0,
                             'DataHoraEmissao' => $invoice['invoice_date'],
                             'DataVencimento' => $invoice['invoice_duedate'],
-                            'Valor' => $invoice['total'],
+                            'Valor' => $invoice['ticket_value'],
                             'LinhaDigitavel' => $invoice['invoice_string'],
                             'IDContaRec' => $invoice['id_nimbly_invoice'],
                             'NossoNumero' => $invoice['our_number'],
