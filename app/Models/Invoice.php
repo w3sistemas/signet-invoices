@@ -37,6 +37,7 @@ class Invoice extends Model
         'ticket_id',
         'send_nimbly_ticket',
         'payload',
-        'send_nimbly_date'
+        'send_nimbly_date',
+        'ticket_value'
     ];
 }

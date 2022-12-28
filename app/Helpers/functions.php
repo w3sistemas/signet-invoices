@@ -73,3 +73,10 @@ function getReceiptTypeByBank(int $bank): int
 
     return $receipt;
 }
+
+function getTicketValue($string): string
+{
+    $extract = (int) ltrim(substr($string, -10), 0);
+
+    return (float) number_format($extract/100,2,".","");
+}
