@@ -57,6 +57,7 @@ class NimblySendTicketService extends Command
     {
         $invoices = Invoice::where([
             'send_nimbly' => 1,
+            'send_email' => 0,
             'send_nimbly_ticket' => 0
         ])
             ->whereNotNull('invoice_string')
@@ -96,11 +97,15 @@ class NimblySendTicketService extends Command
                         $request = $this->nimblyInvoiceService->sentTicketData($ticketData);
 
                         if ($request) {
+
+                            $this->nimblyInvoiceService->sendEmail($invoice['id_nimbly_invoice']);
+
                             $outputTicketData = Json::decode($request, 1);
 
                             $invoice->update([
                                 'send_nimbly_ticket' => 1,
                                 'ticket_id' => $outputTicketData['ID'],
+                                'send_email' => 1,
                             ]);
                         }
                     }

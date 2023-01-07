@@ -89,6 +89,29 @@ class NimblyInvoiceService
     /**
      * @throws GuzzleException
      */
+    public function sendEmail($id): string
+    {
+        try {
+            $request = $this->http->post(env('NIMBLY_API') . NimblyEnum::SEND_EMAIL . $id . NimblyEnum::SEND_EMAIL_ROUTE, [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'App' => env('NIMBLY_APP'),
+                    'CN' => env('NIMBLY_CN'),
+                    'IDUsr' => env('NIMBLY_IDUSR'),
+                    'Hash' => env('NIMBLY_HASH'),
+                    'Usr' => env('NIMBLY_USR'),
+                ],
+            ]);
+
+            return $request->getBody()->getContents();
+        }catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * @throws GuzzleException
+     */
     public function sentTicketData($params): string
     {
         try {

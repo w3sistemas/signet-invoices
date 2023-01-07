@@ -38,6 +38,7 @@ class Invoice extends Model
         'send_nimbly_ticket',
         'payload',
         'send_nimbly_date',
-        'ticket_value'
+        'ticket_value',
+        'send_email',
     ];
 }
